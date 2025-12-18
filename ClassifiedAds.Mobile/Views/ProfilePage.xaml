@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ClassifiedAds.Mobile.ViewModels"
+             x:Class="ClassifiedAds.Mobile.Views.ProfilePage"
+             
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}"
+             Title="Profile">
+
+    <ContentPage.BindingContext>
+        <vm:ProfileViewModel />
+    </ContentPage.BindingContext>
+
+    <Shell.NavBarIsVisible>False</Shell.NavBarIsVisible>
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Grid Grid.Row="0" 
+              BackgroundColor="{StaticResource DarkToolbar}" 
+              HeightRequest="60" 
+              Padding="15,0">
+            <Label Text="MY CLASSIFIEDS" 
+                   TextColor="White" 
+                   FontAttributes="Bold" 
+                   FontSize="18" 
+                   VerticalOptions="Center"/>
+
+            <ImageButton Source="dotnet_bot.png" 
+                         HorizontalOptions="End" 
+                         VerticalOptions="Center" 
+                         HeightRequest="25">
+                <ImageButton.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="White" xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"/>
+                </ImageButton.Behaviors>
+            </ImageButton>
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout>
+
+                <Frame BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" 
+                       CornerRadius="0" 
+                       Padding="20,40" 
+                       BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="15">
+
+                        <Label Text="Guest mode" 
+                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" 
+                               FontSize="22" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+
+                        <Label Text="to use all features" 
+                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" 
+                               HorizontalOptions="Center"/>
+
+                        <Button Text="SIGN IN / REGISTER"
+                                BackgroundColor="{StaticResource BrandOrange}"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                HeightRequest="50"
+                                CornerRadius="5"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <CollectionView ItemsSource="{Binding MenuItems}" 
+                                Margin="0,20,0,0"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="50, *, 30" Padding="15" BackgroundColor="Transparent">
+                                <Image Grid.Column="0" Source="{Binding Icon}" HeightRequest="24" Opacity="0.6"/>
+
+                                <Label Grid.Column="1" Text="{Binding Title}" 
+                                       TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" 
+                                       VerticalOptions="Center" 
+                                       FontSize="16"/>
+
+                                <Label Grid.Column="2" Text="›" 
+                                       FontSize="24" 
+                                       TextColor="{StaticResource DisabledGrey}" 
+                                       HorizontalOptions="End"/>
+
+                                <BoxView Grid.Row="0" Grid.ColumnSpan="3" HeightRequest="1" 
+                                         Color="{AppThemeBinding Light={StaticResource SeparatorLight}, Dark={StaticResource SeparatorDark}}" 
+                                         VerticalOptions="End"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

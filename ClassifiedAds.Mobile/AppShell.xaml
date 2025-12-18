@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Shell
+    x:Class="ClassifiedAds.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:ClassifiedAds.Mobile.Views"
+    Title="ClassifiedAds.Mobile"
+    
+    Shell.TabBarBackgroundColor="{StaticResource DarkToolbar}"
+    Shell.TabBarTitleColor="{StaticResource DisabledGrey}"
+    Shell.TabBarUnselectedColor="{StaticResource DisabledGrey}"
+    Shell.TabBarForegroundColor="{StaticResource BrandOrange}">
+
+    <TabBar>
+        <Tab Title="Home" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate views:CategoriesPage}" />
+        </Tab>
+
+        <Tab Title="Offers" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate views:CategoriesPage}" />
+        </Tab>
+
+        <Tab Title="Cart" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate views:CategoriesPage}" />
+        </Tab>
+
+        <Tab Title="Profile" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate views:ProfilePage}" />
+        </Tab>
+    </TabBar>
+
+</Shell>
+

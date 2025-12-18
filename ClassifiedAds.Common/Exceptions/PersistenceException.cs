@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ClassifiedAds.Common.Exceptions
+{
+    public class PersistenceException : Exception
+    {
+        public PersistenceException() { }
+        public PersistenceException(string message) : base(message) { }
+        public PersistenceException(string message, Exception inner) : base(message, inner) { }
+    }
+}
