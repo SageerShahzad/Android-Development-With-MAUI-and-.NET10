@@ -14,7 +14,7 @@
 
     <TabBar>
         <Tab Title="Home" Icon="dotnet_bot.png">
-            <ShellContent ContentTemplate="{DataTemplate views:CategoriesPage}" />
+            <ShellContent ContentTemplate="{DataTemplate views:AdsPage}" />
         </Tab>
 
         <Tab Title="Offers" Icon="dotnet_bot.png">

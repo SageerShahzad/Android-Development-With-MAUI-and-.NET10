@@ -31,8 +31,8 @@
 
 | Folder | Description |
 | :--- | :--- |
-| `ClassifiedAds.Portal` | Backend API and Admin Web Portal. |
-| `ClassifiedAds.client` | (Local) MAUI Client (Excluded from Git). |
+| `ClassifiedAds.API` | Backend API. |
+| `ClassifiedAds.Mobile` | (Local) MAUI Client (Excluded from Git). |
 
 ---
 

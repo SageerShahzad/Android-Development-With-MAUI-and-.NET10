@@ -77,10 +77,12 @@
 	<ItemGroup>
 	  <Folder Include="Controls\" />
 	  <Folder Include="Models\" />
-	  <Folder Include="Services\" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\AdsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\CategoriesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
