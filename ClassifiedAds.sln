@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedAds.API", "Classi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedAds.Common", "ClassifiedAds.Common\ClassifiedAds.Common.csproj", "{97476333-DB2B-E8A6-9638-42143D037FBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedAds.Mobile", "ClassifiedAds.Mobile\ClassifiedAds.Mobile.csproj", "{5BDBAB78-7926-46A0-B753-9C646C2FC792}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedAds.Mobile", "ClassifiedAds.Mobile\ClassifiedAds.Mobile.csproj", "{5D903016-6CCF-4AC7-8DF1-C6CA342B900B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{97476333-DB2B-E8A6-9638-42143D037FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97476333-DB2B-E8A6-9638-42143D037FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97476333-DB2B-E8A6-9638-42143D037FBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5BDBAB78-7926-46A0-B753-9C646C2FC792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5BDBAB78-7926-46A0-B753-9C646C2FC792}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5BDBAB78-7926-46A0-B753-9C646C2FC792}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5BDBAB78-7926-46A0-B753-9C646C2FC792}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D903016-6CCF-4AC7-8DF1-C6CA342B900B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D903016-6CCF-4AC7-8DF1-C6CA342B900B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D903016-6CCF-4AC7-8DF1-C6CA342B900B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D903016-6CCF-4AC7-8DF1-C6CA342B900B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

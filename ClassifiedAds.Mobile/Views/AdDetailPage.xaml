@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ClassifiedAds.Mobile.ViewModels"
+             x:Class="ClassifiedAds.Mobile.Views.AdDetailPage"
+             Title="Ad Details">
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="*, Auto" Padding="15" RowSpacing="15">
+
+            <Image Grid.Row="0"
+                   Source="{Binding MainImageUrl}"
+                   Aspect="AspectFill"
+                   HeightRequest="250"
+                   BackgroundColor="LightGray"/>
+
+            <VerticalStackLayout Grid.Row="1" Spacing="10">
+                <Label Text="{Binding Category}" 
+                       FontSize="12" 
+                       TextColor="{StaticResource Primary}" 
+                       TextTransform="Uppercase"/>
+
+                <Label Text="{Binding Title}" 
+                       FontSize="24" 
+                       FontAttributes="Bold" />
+
+                <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="10">
+
+                    <Label Text="{Binding Price, Mode=OneWay, StringFormat='{0:C}'}" 
+           FontSize="20" 
+           TextColor="Green" 
+           VerticalOptions="Center"
+           FontAttributes="Bold"/>
+
+                    <Stepper Increment="10"
+             Maximum="500"
+             Minimum="0"
+             Value="{Binding Price, Mode=TwoWay}"
+             VerticalOptions="Center"/>
+
+                </HorizontalStackLayout>
+
+                <Label Text="{Binding City}" 
+                       TextColor="Gray" 
+                       FontSize="14">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="{Binding City}" />
+                            <Span Text=", " />
+                            <Span Text="{Binding Country}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="2" Spacing="10">
+                <BoxView HeightRequest="1" Color="LightGray" />
+
+                <Label Text="Description" 
+                       FontSize="18" 
+                       FontAttributes="Bold" />
+
+                <Label Text="{Binding Description}" 
+                       FontSize="16" 
+                       LineHeight="1.2"/>
+
+                <Label Text="{Binding CreatedDate, StringFormat='Posted on: {0:MMMM dd, yyyy}'}" 
+                       FontSize="12" 
+                       TextColor="Gray" 
+                       Margin="0,20,0,0"/>
+            </VerticalStackLayout>
+
+        </Grid>
+    </ScrollView>
+</ContentPage>

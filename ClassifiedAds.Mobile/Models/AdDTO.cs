@@ -1,4 +1,4 @@
-﻿namespace ClassifiedAds.Mobile.Dtos
+﻿namespace ClassifiedAds.Mobile.Models
 {
     public class AdDTO
     {

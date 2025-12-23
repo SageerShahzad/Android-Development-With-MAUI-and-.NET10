@@ -22,6 +22,7 @@ namespace ClassifiedAds.API.Controllers
         [HttpGet("openads")]
         public async Task<ActionResult<List<AdDTO>>> GetOpenAds()
         {
+            Console.WriteLine("API: GetOpenAds called");
             var ads = await _context.Ads
                 .Include(a => a.Country)
                 .Include(a => a.City)
@@ -32,6 +33,7 @@ namespace ClassifiedAds.API.Controllers
                 .ToListAsync();
 
             var adDtos = ads.Select(MapToDto).ToList();
+            Console.WriteLine($"API: Returning {ads.Count} ads");
             return Ok(adDtos);
         }
 
