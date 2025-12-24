@@ -1,13 +1,17 @@
 ﻿using ClassifiedAds.Mobile.Models;
 
-namespace GloboTicket.Admin.Mobile.Repositories;
+
+
+namespace ClassifiedAds.Mobile.Repositories;
+
+
 
 public interface IAdRepository
+
 {
-    Task<List<EventModel>> GetEvents();
-    Task<EventModel?> GetEvent(Guid id);
-    Task<bool> UpdateStatus(Guid id, EventStatusModel status);
-    Task<bool> CreateEvent(EventModel model);
-    Task<bool> EditEvent(EventModel model);
-    Task<bool> DeleteEvent(Guid id);
+
+    // We only need this one for now to display the detail page
+
+    Task<AdDTO?> GetAd(int id);
+
 }

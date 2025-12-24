@@ -1,94 +1,77 @@
 ﻿using ClassifiedAds.Mobile.Models;
+using ClassifiedAds.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
-using System.Diagnostics.Metrics;
-using System.Runtime.CompilerServices;
-
 
 namespace ClassifiedAds.Mobile.ViewModels;
 
 public partial class AdDetailViewModel : ObservableObject
 {
-    // Using ObservableProperty automatically generates the code needed for UI updates
-    [ObservableProperty]
-    private int id;
+    private readonly IAdService _adService;
 
-    [ObservableProperty]
-    private string country;
+    // ... Properties ...
+    [ObservableProperty] private int id;
+    [ObservableProperty] private string title;
+    [ObservableProperty] private string description;
+    [ObservableProperty] private double price;
+    [ObservableProperty] private string city;
+    [ObservableProperty] private string country;
+    [ObservableProperty] private string mainImageUrl;
+    [ObservableProperty] private string imageUrl;
+    [ObservableProperty] private string category;
+    [ObservableProperty] private DateTime createdDate;
+    [ObservableProperty] private string memberId;
 
-    [ObservableProperty]
-    private string city;
+    [ObservableProperty] private bool showLargerImage;
+    [ObservableProperty] private double imageHeight = 100;
 
-    [ObservableProperty]
-    private string postalCode;
-
-    [ObservableProperty]
-    private string title;
-
-    [ObservableProperty]
-    private string description;
-
-    [ObservableProperty]
-    private double price;
-
-    [ObservableProperty]
-    private string category;
-
-    [ObservableProperty]
-    private string subCategory;
-
-    [ObservableProperty]
-    private DateTime createdDate;
-
-    [ObservableProperty]
-    private string? imageUrl;
-
-    [ObservableProperty]
-    private string mainImageUrl;
-
-    [ObservableProperty]
-    private string memberId;
-
-    public AdDetailViewModel()
+    partial void OnShowLargerImageChanged(bool value)
     {
-        InitializeSampleData();
+        ImageHeight = value ? 250 : 100;
     }
 
-    private void InitializeSampleData()
+    public AdDetailViewModel(IAdService adService)
     {
-        // 1. Create a sample DTO (simulating API response)
-        var sampleAd = new AdDTO
+        _adService = adService;
+        LoadAdData(1);
+    }
+
+    private async void LoadAdData(int adId)
+    {
+        try
         {
-            Id = 101,
-            Title = "Vintage 1970s Film Camera",
-            Price = 150.00m,
-            Description = "A beautiful, fully functional vintage film camera. Comes with original lens cap and leather strap. Perfect for students or collectors.",
-            City = "London",
-            Country = "UK",
-            PostalCode = "SW1A 1AA",
-            Category = "Electronics",
-            SubCategory = "Cameras",
-            CreatedDate = DateTime.Now.AddDays(-2),
-            ImageUrl = "dotnet_bot.png", // Using the default image existing in MAUI project for test
-            MainImageUrl = "dotnet_bot.png",
-            MemberId = "user123"
-        };
+            var adDto = await _adService.GetAdById(adId);
 
-        // 2. Map DTO to ViewModel properties
-        Id = sampleAd.Id;
-        Title = sampleAd.Title;
-        Price = (double)(sampleAd.Price ?? 0);
-        Description = sampleAd.Description;
-        City = sampleAd.City;
-        Country = sampleAd.Country;
-        PostalCode = sampleAd.PostalCode;
-        Category = sampleAd.Category;
-        SubCategory = sampleAd.SubCategory;
-        CreatedDate = sampleAd.CreatedDate;
-        ImageUrl = sampleAd.ImageUrl;
-        MainImageUrl = sampleAd.MainImageUrl;
-        MemberId = sampleAd.MemberId;
+            if (adDto != null)
+            {
+                Id = adDto.Id;
+                Title = adDto.Title;
+                Price = (double)(adDto.Price ?? 0);
+                Description = adDto.Description;
+                City = adDto.City;
+                Country = adDto.Country;
+                Category = adDto.Category;
+                CreatedDate = adDto.CreatedDate;
+                MemberId = adDto.MemberId;
+
+                // --- FIX STARTS HERE ---
+
+                // 1. Properly map the string (don't set it to string.Empty)
+                ImageUrl = adDto.ImageUrl ?? "dotnet_bot"; // Fallback if null
+
+                // 2. Logic for MainImageUrl
+                // If API sends full URL (http...), use it. 
+                // If API sends filename (camera.png), use it.
+                // If API sends null, fallback to default.
+                MainImageUrl = !string.IsNullOrEmpty(adDto.MainImageUrl)
+                    ? adDto.MainImageUrl
+                    : "dotnet_bot";
+
+                // --- FIX ENDS HERE ---
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading ad: {ex.Message}");
+        }
     }
-
-
 }

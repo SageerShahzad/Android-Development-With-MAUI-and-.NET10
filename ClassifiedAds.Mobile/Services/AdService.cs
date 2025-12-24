@@ -1,33 +1,37 @@
 ﻿using ClassifiedAds.Mobile.Models;
-using ClassifiedAds.Mobile.Services;
-using GloboTicket.Admin.Mobile.Repositories;
 
-namespace GloboTicket.Admin.Mobile.Services;
+using ClassifiedAds.Mobile.Repositories;
+
+
+
+namespace ClassifiedAds.Mobile.Services;
+
+
 
 public class AdService : IAdService
-{
-    private readonly IAdRepository _eventRepository;
 
-    public AdService(IAdRepository eventRepository)
+{
+
+    private readonly IAdRepository _repository;
+
+
+
+    public AdService(IAdRepository repository)
+
     {
-        _eventRepository = eventRepository;
+
+        _repository = repository;
+
     }
 
-    public Task<List<EventModel>> GetEvents()
-        => _eventRepository.GetEvents();
 
-    public Task<EventModel?> GetEvent(Guid id)
-        => _eventRepository.GetEvent(id);
 
-    public Task<bool> UpdateStatus(Guid id, EventStatusModel status)
-        => _eventRepository.UpdateStatus(id, status);
+    public Task<AdDTO?> GetAdById(int id)
 
-    public Task<bool> CreateEvent(EventModel model)
-        => _eventRepository.CreateEvent(model);
+    {
 
-    public Task<bool> EditEvent(EventModel model)
-        => _eventRepository.EditEvent(model);
+        return _repository.GetAd(id);
 
-    public Task<bool> DeleteEvent(Guid id)
-        => _eventRepository.DeleteEvent(id);
+    }
+
 }
