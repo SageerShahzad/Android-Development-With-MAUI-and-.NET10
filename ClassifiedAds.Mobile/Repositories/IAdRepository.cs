@@ -1,17 +1,9 @@
 ﻿using ClassifiedAds.Mobile.Models;
 
-
-
 namespace ClassifiedAds.Mobile.Repositories;
 
-
-
 public interface IAdRepository
-
 {
-
-    // We only need this one for now to display the detail page
-
+    Task<List<AdDTO>> GetAds();
     Task<AdDTO?> GetAd(int id);
-
 }

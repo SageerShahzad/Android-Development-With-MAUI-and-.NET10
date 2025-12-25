@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ClassifiedAds.Mobile.ViewModels"
+             xmlns:models="clr-namespace:ClassifiedAds.Mobile.Models"
+             x:Class="ClassifiedAds.Mobile.Views.AdsPage"
+             Title="Classified Ads">
+
+    <RefreshView Command="{Binding LoadAdsCommand}" IsRefreshing="{Binding IsBusy}">
+        <CollectionView ItemsSource="{Binding Ads}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:AdDTO">
+                    <Grid Padding="10">
+                        <Frame HeightRequest="120" Padding="0" CornerRadius="10">
+                            <Grid ColumnDefinitions="120, *">
+                                <Image Grid.Column="0" Source="{Binding MainImageUrl}" Aspect="AspectFill" BackgroundColor="LightGray"/>
+                                <VerticalStackLayout Grid.Column="1" Padding="10" Spacing="5">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" TextColor="Green" FontAttributes="Bold"/>
+                                    <Label Text="{Binding City}" TextColor="Gray" FontSize="12"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdsViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
+</ContentPage>

@@ -1,10 +1,13 @@
-﻿namespace ClassifiedAds.Mobile
+﻿using ClassifiedAds.Mobile.Views;
+
+namespace ClassifiedAds.Mobile;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        // Allow navigation from List -> Detail
+        Routing.RegisterRoute(nameof(AdDetailPage), typeof(AdDetailPage));
     }
 }
