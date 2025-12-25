@@ -1,0 +1,140 @@
+﻿using ClassifiedAds.Mobile.Models;
+using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace ClassifiedAds.Mobile.ViewModels
+{
+    public partial class UserAuthViewModel : ObservableObject
+    {
+        private readonly IUserAuthService _authService;
+
+        // ============================
+        // 1. LOGIN INPUTS
+        // ============================
+        [ObservableProperty] private string email;
+        [ObservableProperty] private string password;
+
+        // ============================
+        // 2. PROFILE DATA (Flattened)
+        // ============================
+        // These replace the nested 'CurrentUser' object. 
+        // We separate 'ProfileEmail' from the input 'Email' to avoid confusion.
+        [ObservableProperty] private string profileDisplayName;
+        [ObservableProperty] private string profileEmail;
+        [ObservableProperty] private string profileImageUrl;
+
+        // ============================
+        // 3. UI STATE
+        // ============================
+        [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private string errorMessage;
+        [ObservableProperty] private bool hasError;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsNotLoggedIn))]
+        private bool isLoggedIn;
+
+        public bool IsNotLoggedIn => !IsLoggedIn;
+
+        public UserAuthViewModel(IUserAuthService authService)
+        {
+            _authService = authService;
+        }
+
+        public async Task InitializeAsync()
+        {
+            // Check authentication status
+            bool authenticated = await _authService.IsAuthenticatedAsync();
+            IsLoggedIn = authenticated;
+
+            // TODO: If authenticated, you might want to call an API here 
+            // to fetch the latest user details and populate ProfileDisplayName/Image.
+        }
+
+        [RelayCommand]
+        private async Task Login()
+        {
+            if (IsBusy) return;
+
+            HasError = false;
+            ErrorMessage = "";
+
+            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+            {
+                ErrorMessage = "Please enter both email and password.";
+                HasError = true;
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+                var user = await _authService.LoginAsync(Email, Password);
+
+                if (user != null)
+                {
+                    // ========================================================
+                    // MAPPING LOGIC (Similar to AdDetailViewModel)
+                    // ========================================================
+                    // We map DTO properties to ViewModel properties here.
+                    // This lets us handle null checks and defaults in C# code.
+
+                    ProfileDisplayName = user.DisplayName;
+                    ProfileEmail = user.Email;
+
+                    // Image Logic: If null or empty, use default bot image
+                    ProfileImageUrl = !string.IsNullOrEmpty(user.ImageUrl)
+                                      ? user.ImageUrl
+                                      : "dotnet_bot.png";
+
+                    // Clear security fields
+                    Password = string.Empty;
+
+                    // Switch the View
+                    IsLoggedIn = true;
+                }
+                else
+                {
+                    ErrorMessage = "Invalid Login Attempt. Check your credentials.";
+                    HasError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "An unexpected error occurred.";
+                HasError = true;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task Logout()
+        {
+            await _authService.LogoutAsync();
+
+            // Clear Profile Data
+            ProfileDisplayName = string.Empty;
+            ProfileEmail = string.Empty;
+            ProfileImageUrl = string.Empty; // Or reset to default
+
+            // Clear Inputs
+            Email = string.Empty;
+            Password = string.Empty;
+            ErrorMessage = "";
+            HasError = false;
+
+            // Update State
+            IsLoggedIn = false;
+        }
+
+        [RelayCommand]
+        private async Task GoToRegister()
+        {
+            await Shell.Current.DisplayAlert("Register", "Navigate to Register Page", "OK");
+        }
+    }
+}

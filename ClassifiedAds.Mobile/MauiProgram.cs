@@ -1,9 +1,10 @@
-﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
-using ClassifiedAds.Mobile.Services;
+﻿using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
 using ClassifiedAds.Mobile.Repositories;
-using ClassifiedAds.Mobile.Views;
+using ClassifiedAds.Mobile.Services;
 using ClassifiedAds.Mobile.ViewModels;
+using ClassifiedAds.Mobile.Views;
+using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 
 namespace ClassifiedAds.Mobile;
 
@@ -21,18 +22,26 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // 1. Services & Repos
+        
+        builder.Services.AddSingleton<IUserAuthRepository, UserAuthRepository>();
+                
+        builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
+         
+        builder.Services.AddTransient<UserAuthViewModel>();
+             
+        builder.Services.AddTransient<UserAuthPage>();
+
         builder.Services.AddSingleton<IAdRepository, AdRepository>();
         builder.Services.AddSingleton<IAdService, AdService>();
 
-        // 2. ViewModels & Pages
+        
         builder.Services.AddTransient<AdsViewModel>();
         builder.Services.AddTransient<AdsPage>(); // The List Page
 
         builder.Services.AddTransient<AdDetailViewModel>();
         builder.Services.AddTransient<AdDetailPage>(); // The Detail Page
 
-        // 3. HttpClient
+        
         builder.Services.AddHttpClient("AdsApi", client =>
         {
             string baseUrl = DeviceInfo.Platform == DevicePlatform.Android

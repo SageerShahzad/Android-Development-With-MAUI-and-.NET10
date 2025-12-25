@@ -6,9 +6,10 @@
     xmlns:views="clr-namespace:ClassifiedAds.Mobile.Views"
     Title="ClassifiedAds.Mobile">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate views:AdsPage}"
-        Route="AdsPage" />
+   
+    <TabBar>
+        <ShellContent Title="Home" Icon="dotnet_bot.png" ContentTemplate="{DataTemplate views:AdsPage}" />
 
+        <ShellContent Title="Account" Icon="dotnet_bot.png" ContentTemplate="{DataTemplate views:UserAuthPage}" />
+    </TabBar>
 </Shell>
