@@ -1,4 +1,5 @@
 ﻿using ClassifiedAds.Mobile.RepoServices.MemberRepoService;
+using ClassifiedAds.Mobile.RepoServices.MessageRepoService;
 using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
 using ClassifiedAds.Mobile.Repositories;
 using ClassifiedAds.Mobile.Services;
@@ -56,6 +57,15 @@ public static class MauiProgram
         builder.Services.AddTransient<AdsPage>();
         builder.Services.AddTransient<AdDetailViewModel>();
         builder.Services.AddTransient<AdDetailPage>();
+
+        // In MauiProgram.cs
+        builder.Services.AddSingleton<SignalRService>(); // Add this line
+        // Add these lines in your CreateMauiApp method
+        builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
+        builder.Services.AddSingleton<IMessageService, MessageService>();
+
+        builder.Services.AddTransient<MessageThreadViewModel>();
+        builder.Services.AddTransient<MessageThreadPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -6,7 +6,7 @@
              Title="Ad Details">
 
     <ScrollView>
-        <Grid RowDefinitions="Auto, Auto, Auto, *" 
+        <Grid RowDefinitions="Auto, Auto, Auto, *, Auto" 
               ColumnDefinitions="*, Auto" 
               Padding="15" 
               RowSpacing="15">
@@ -17,13 +17,12 @@
             </HorizontalStackLayout>
 
             <Image Grid.Row="1"
-       Grid.ColumnSpan="2"
-       Source="{Binding MainImageUrl}"
-       Aspect="AspectFit"
-       HeightRequest="{Binding ImageHeight}" 
-       HorizontalOptions="Center"
-       BackgroundColor="LightGray"/>
-
+                   Grid.ColumnSpan="2"
+                   Source="{Binding MainImageUrl}"
+                   Aspect="AspectFit"
+                   HeightRequest="{Binding ImageHeight}" 
+                   HorizontalOptions="Center"
+                   BackgroundColor="LightGray"/>
 
             <VerticalStackLayout Grid.Row="2" Spacing="10">
                 <Label Text="{Binding Category}" 
@@ -39,22 +38,6 @@
                        FontSize="16" 
                        LineHeight="1.2"/>
 
-                <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="10">
-
-                    <Label Text="{Binding Price, Mode=OneWay, StringFormat='{0:C}'}" 
-           FontSize="20" 
-           TextColor="Green" 
-           VerticalOptions="Center"
-           FontAttributes="Bold"/>
-
-                    <Stepper Increment="10"
-             Maximum="500"
-             Minimum="0"
-             Value="{Binding Price, Mode=TwoWay}"
-             VerticalOptions="Center"/>
-
-                </HorizontalStackLayout>
-
                 <Label Text="{Binding City}" 
                        TextColor="Gray" 
                        FontSize="14">
@@ -67,6 +50,20 @@
                     </Label.FormattedText>
                 </Label>
             </VerticalStackLayout>
+
+            <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="10">
+                <Label Text="{Binding Price, Mode=OneWay, StringFormat='{0:C}'}" 
+                       FontSize="20" 
+                       TextColor="Green" 
+                       VerticalOptions="Center"
+                       FontAttributes="Bold"/>
+
+                <Stepper Increment="10"
+                         Maximum="500"
+                         Minimum="0"
+                         Value="{Binding Price, Mode=TwoWay}"
+                         VerticalOptions="Center"/>
+            </HorizontalStackLayout>
 
             <VerticalStackLayout Grid.Row="3" Spacing="10">
                 <BoxView HeightRequest="1" Color="LightGray" />
@@ -83,8 +80,18 @@
                        FontSize="12" 
                        TextColor="Gray" 
                        Margin="0,20,0,0"/>
-
             </VerticalStackLayout>
+
+            <Button Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    Text="Contact Advertiser"
+                    Command="{Binding ContactSellerCommand}"
+                    BackgroundColor="Black"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="25"
+                    HeightRequest="50"
+                    Margin="0,20,0,0" />
 
         </Grid>
     </ScrollView>
