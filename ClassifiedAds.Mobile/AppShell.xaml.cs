@@ -9,5 +9,7 @@ public partial class AppShell : Shell
         InitializeComponent();
         // Allow navigation from List -> Detail
         Routing.RegisterRoute(nameof(AdDetailPage), typeof(AdDetailPage));
+        // ADD THIS LINE
+        Routing.RegisterRoute(nameof(EditProfilePage), typeof(EditProfilePage));
     }
 }

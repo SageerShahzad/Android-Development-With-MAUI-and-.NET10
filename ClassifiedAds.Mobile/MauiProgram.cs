@@ -1,4 +1,5 @@
-﻿using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
+﻿using ClassifiedAds.Mobile.RepoServices.MemberRepoService;
+using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
 using ClassifiedAds.Mobile.Repositories;
 using ClassifiedAds.Mobile.Services;
 using ClassifiedAds.Mobile.ViewModels;
@@ -22,28 +23,10 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        
-        builder.Services.AddSingleton<IUserAuthRepository, UserAuthRepository>();
-                
-        builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
-         
-        builder.Services.AddTransient<UserAuthViewModel>();
-             
-        builder.Services.AddTransient<UserAuthPage>();
-
-        builder.Services.AddSingleton<IAdRepository, AdRepository>();
-        builder.Services.AddSingleton<IAdService, AdService>();
-
-        
-        builder.Services.AddTransient<AdsViewModel>();
-        builder.Services.AddTransient<AdsPage>(); // The List Page
-
-        builder.Services.AddTransient<AdDetailViewModel>();
-        builder.Services.AddTransient<AdDetailPage>(); // The Detail Page
-
-        
+        // 1. HTTP Client
         builder.Services.AddHttpClient("AdsApi", client =>
         {
+            // Use 10.0.2.2 for Android Emulator, localhost for Windows
             string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
                 ? "http://10.0.2.2:5000"
                 : "https://localhost:5001";
@@ -51,6 +34,28 @@ public static class MauiProgram
             client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromSeconds(30);
         });
+
+        // 2. Authentication (MUST BE SINGLETON for UserAuthViewModel to keep state)
+        builder.Services.AddSingleton<IUserAuthRepository, UserAuthRepository>();
+        builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
+
+        // IMPORTANT: Changed to Singleton so Profile Data persists across pages
+        builder.Services.AddSingleton<UserAuthViewModel>();
+        builder.Services.AddSingleton<UserAuthPage>();
+
+        // 3. Members & Profile (NEW - CAUSES CRASH IF MISSING)
+        builder.Services.AddSingleton<IMemberRepository, MemberRepository>();
+        builder.Services.AddSingleton<IMemberService, MemberService>();
+        builder.Services.AddTransient<EditProfileViewModel>();
+        builder.Services.AddTransient<EditProfilePage>();
+
+        // 4. Ads
+        builder.Services.AddSingleton<IAdRepository, AdRepository>();
+        builder.Services.AddSingleton<IAdService, AdService>();
+        builder.Services.AddTransient<AdsViewModel>();
+        builder.Services.AddTransient<AdsPage>();
+        builder.Services.AddTransient<AdDetailViewModel>();
+        builder.Services.AddTransient<AdDetailPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

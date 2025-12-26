@@ -51,6 +51,12 @@ namespace ClassifiedAds.Mobile.RepoServices.UserAuthRepoService
             SecureStorage.Default.Remove(TokenKey);
         }
 
+        // ADD THIS IMPLEMENTATION
+        public async Task<string?> GetTokenAsync()
+        {
+            return await SecureStorage.Default.GetAsync(TokenKey);
+        }
+
         public async Task<bool> IsAuthenticatedAsync()
         {
             var token = await SecureStorage.Default.GetAsync(TokenKey);

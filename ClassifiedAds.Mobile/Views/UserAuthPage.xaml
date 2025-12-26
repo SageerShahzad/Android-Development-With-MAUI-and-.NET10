@@ -138,11 +138,12 @@
                             HeightRequest="50"/>
 
                     <Button Text="Edit Profile" 
-                            BackgroundColor="#F5F5F5" 
-                            TextColor="Black" 
-                            HorizontalOptions="Fill" 
-                            CornerRadius="10" 
-                            HeightRequest="50"/>
+        Command="{Binding GoToEditProfileCommand}"
+        BackgroundColor="#F5F5F5" 
+        TextColor="Black" 
+        HorizontalOptions="Fill" 
+        CornerRadius="10" 
+        HeightRequest="50"/>
 
                     <Button Text="Logout" 
                             Command="{Binding LogoutCommand}"

@@ -9,6 +9,10 @@ namespace ClassifiedAds.Mobile.RepoServices.UserAuthRepoService
     {
         Task<UserDto?> LoginAsync(string email, string password);
         Task LogoutAsync();
+
+        // ADD THIS LINE
+        Task<string?> GetTokenAsync();
+
         Task<bool> IsAuthenticatedAsync();
     }
 }

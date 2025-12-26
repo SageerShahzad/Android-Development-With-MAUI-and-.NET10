@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ClassifiedAds.Mobile.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ClassifiedAds.Mobile.Views.EditProfilePage"
+             Title="Edit Profile"
+             BackgroundColor="White">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="25">
+
+            <Grid HeightRequest="120" WidthRequest="120" HorizontalOptions="Center" Margin="0,20,0,10">
+                <Border StrokeShape="RoundRectangle 60" 
+                        StrokeThickness="0" 
+                        HeightRequest="120" 
+                        WidthRequest="120">
+                    <Image Source="{Binding ProfileImageSource, TargetNullValue='dotnet_bot.png'}" 
+                           Aspect="AspectFill" />
+                </Border>
+
+                <Frame BackgroundColor="Black" 
+                       CornerRadius="15" 
+                       HeightRequest="30" 
+                       WidthRequest="30" 
+                       HorizontalOptions="End" 
+                       VerticalOptions="End" 
+                       Padding="0" 
+                       HasShadow="False">
+                    <Label Text="📷" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontSize="16"/>
+                </Frame>
+
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding PickImageCommand}" />
+                </Grid.GestureRecognizers>
+            </Grid>
+
+            <Label Text="Tap photo to change" FontSize="12" TextColor="Gray" HorizontalOptions="Center" Margin="0,-15,0,10"/>
+
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Display Name" TextColor="Gray" FontSize="13"/>
+                <Entry Text="{Binding DisplayName}" Placeholder="Display Name" TextColor="Black" BackgroundColor="#F5F5F5"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Description / Bio" TextColor="Gray" FontSize="13"/>
+                <Editor Text="{Binding Description}" Placeholder="Tell us about yourself..." HeightRequest="100" TextColor="Black" BackgroundColor="#F5F5F5"/>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <VerticalStackLayout Spacing="5" Grid.Column="0">
+                    <Label Text="City" TextColor="Gray" FontSize="13"/>
+                    <Entry Text="{Binding City}" Placeholder="City" TextColor="Black" BackgroundColor="#F5F5F5"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="5" Grid.Column="1">
+                    <Label Text="Country" TextColor="Gray" FontSize="13"/>
+                    <Entry Text="{Binding Country}" Placeholder="Country" TextColor="Black" BackgroundColor="#F5F5F5"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Button Text="Save Changes" 
+                    Command="{Binding SaveChangesCommand}" 
+                    BackgroundColor="Black" 
+                    TextColor="White" 
+                    FontAttributes="Bold"
+                    CornerRadius="25" 
+                    HeightRequest="50"
+                    Margin="0,20,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="Black" HorizontalOptions="Center"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

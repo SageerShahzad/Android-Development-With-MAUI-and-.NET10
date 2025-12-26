@@ -1,5 +1,6 @@
 ﻿using ClassifiedAds.Mobile.Models;
 using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
+using ClassifiedAds.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -30,6 +31,9 @@ namespace ClassifiedAds.Mobile.ViewModels
         [ObservableProperty] private bool isBusy;
         [ObservableProperty] private string errorMessage;
         [ObservableProperty] private bool hasError;
+
+        // ADD THIS PROPERTY to store the User's ID
+        [ObservableProperty] private string currentUserId;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsNotLoggedIn))]
@@ -80,6 +84,9 @@ namespace ClassifiedAds.Mobile.ViewModels
                     // We map DTO properties to ViewModel properties here.
                     // This lets us handle null checks and defaults in C# code.
 
+                    // ADD THIS LINE: Store the ID
+                    CurrentUserId = user.Id;
+
                     ProfileDisplayName = user.DisplayName;
                     ProfileEmail = user.Email;
 
@@ -115,6 +122,7 @@ namespace ClassifiedAds.Mobile.ViewModels
         private async Task Logout()
         {
             await _authService.LogoutAsync();
+            CurrentUserId = string.Empty; // Clear ID
 
             // Clear Profile Data
             ProfileDisplayName = string.Empty;
@@ -135,6 +143,15 @@ namespace ClassifiedAds.Mobile.ViewModels
         private async Task GoToRegister()
         {
             await Shell.Current.DisplayAlert("Register", "Navigate to Register Page", "OK");
+        }
+
+        // ... inside UserAuthViewModel class ...
+
+        [RelayCommand]
+        private async Task GoToEditProfile()
+        {
+            // Navigate to the registered route
+            await Shell.Current.GoToAsync(nameof(EditProfilePage));
         }
     }
 }
