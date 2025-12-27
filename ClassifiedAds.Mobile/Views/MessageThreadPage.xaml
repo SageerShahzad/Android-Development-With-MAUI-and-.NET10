@@ -99,16 +99,7 @@
                        PlaceholderColor="Gray"
                        VerticalOptions="Center"/>
             </Border>
-
-            <Button Grid.Column="1" 
-                    Text="Send" 
-                    Command="{Binding SendMessageCommand}" 
-                    BackgroundColor="#5243E4" 
-                    TextColor="White" 
-                    CornerRadius="10" 
-                    FontAttributes="Bold" 
-                    HeightRequest="45" 
-                    WidthRequest="70"/>
+            <Button Grid.Column="1" Text="Send" Command="{Binding SendMessageCommand}" BackgroundColor="#5243E4" TextColor="White" CornerRadius="10" FontAttributes="Bold" HeightRequest="45" WidthRequest="70"/>
         </Grid>
 
     </Grid>
