@@ -36,6 +36,46 @@ namespace ClassifiedAds.Mobile.RepoServices.UserAuthRepoService
             return user;
         }
 
+        public async Task<string?> GetUserIdFromTokenAsync()
+        {
+            var token = await SecureStorage.Default.GetAsync(TokenKey);
+            if (string.IsNullOrEmpty(token)) return null;
+
+            try
+            {
+                // JWT is: Header.Payload.Signature
+                var parts = token.Split('.');
+                if (parts.Length != 3) return null;
+
+                var payload = parts[1];
+
+                // Fix Base64 padding
+                switch (payload.Length % 4)
+                {
+                    case 2: payload += "=="; break;
+                    case 3: payload += "="; break;
+                }
+
+                var jsonBytes = Convert.FromBase64String(payload);
+                var jsonString = System.Text.Encoding.UTF8.GetString(jsonBytes);
+
+                // Parse JSON to find "nameid"
+                // We use simple string search to avoid System.Text.Json complexity with claims
+                // Look for "nameid":"VALUE"
+                using var doc = System.Text.Json.JsonDocument.Parse(jsonString);
+                if (doc.RootElement.TryGetProperty("nameid", out var idElement))
+                {
+                    return idElement.GetString();
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task LogoutAsync()
         {
             // 1. Get the current token

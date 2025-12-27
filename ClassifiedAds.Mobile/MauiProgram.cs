@@ -27,9 +27,8 @@ public static class MauiProgram
         // 1. HTTP Client
         builder.Services.AddHttpClient("AdsApi", client =>
         {
-            // Use 10.0.2.2 for Android Emulator, localhost for Windows
             string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-                ? "http://10.0.2.2:5000"
+                ? "http://localhost:5000"
                 : "https://localhost:5001";
 
             client.BaseAddress = new Uri(baseUrl);

@@ -1,17 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using ClassifiedAds.Mobile.ViewModels;
 
 namespace ClassifiedAds.Mobile
 {
     public partial class App : Application
     {
-        public App()
+        // Inject the ViewModel into the App constructor
+        public App(UserAuthViewModel authViewModel)
         {
             InitializeComponent();
-        }
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
+            MainPage = new AppShell();
+
+            // CRITICAL FIX: Initialize Auth State immediately on App Start
+            // This ensures CurrentUserId is set before the user navigates anywhere.
+            authViewModel.InitializeAsync();
         }
     }
 }

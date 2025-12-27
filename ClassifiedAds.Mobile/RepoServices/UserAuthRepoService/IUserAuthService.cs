@@ -14,5 +14,7 @@ namespace ClassifiedAds.Mobile.RepoServices.UserAuthRepoService
         Task<string?> GetTokenAsync();
 
         Task<bool> IsAuthenticatedAsync();
+
+        Task<string?> GetUserIdFromTokenAsync();
     }
 }

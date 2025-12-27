@@ -1,4 +1,5 @@
 ﻿using ClassifiedAds.Mobile.Models;
+using ClassifiedAds.Mobile.RepoServices.MemberRepoService;
 using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
 using ClassifiedAds.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,6 +10,7 @@ namespace ClassifiedAds.Mobile.ViewModels
     public partial class UserAuthViewModel : ObservableObject
     {
         private readonly IUserAuthService _authService;
+        private readonly IMemberService _memberService;
 
         // ============================
         // 1. LOGIN INPUTS
@@ -41,20 +43,60 @@ namespace ClassifiedAds.Mobile.ViewModels
 
         public bool IsNotLoggedIn => !IsLoggedIn;
 
-        public UserAuthViewModel(IUserAuthService authService)
+        public UserAuthViewModel(IUserAuthService authService, IMemberService memberService)
         {
             _authService = authService;
+            _memberService = memberService;
         }
 
         public async Task InitializeAsync()
         {
-            // Check authentication status
+            // 1. Check if token exists in storage
             bool authenticated = await _authService.IsAuthenticatedAsync();
-            IsLoggedIn = authenticated;
 
-            // TODO: If authenticated, you might want to call an API here 
-            // to fetch the latest user details and populate ProfileDisplayName/Image.
+            if (authenticated)
+            {
+                // 2. Extract User ID from the token (offline friendly)
+                var userId = await _authService.GetUserIdFromTokenAsync();
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    // 3. SET THE ID (This fixes the Chat Alignment)
+                    CurrentUserId = userId;
+
+                    // 4. Update the View State
+                    IsLoggedIn = true;
+
+                    // 5. Optional: Fetch latest Profile Image from API in background
+                    // We wrap this in try/catch so it doesn't crash if offline
+                    try
+                    {
+                        var profile = await _memberService.GetUserProfileAsync(userId);
+                        if (profile != null)
+                        {
+                            ProfileDisplayName = profile.DisplayName;
+                            ProfileImageUrl = !string.IsNullOrEmpty(profile.ImageUrl)
+                                              ? profile.ImageUrl
+                                              : "dotnet_bot.png";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Profile fetch failed: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    // If token exists but we can't read the ID, force logout
+                    await Logout();
+                }
+            }
+            else
+            {
+                IsLoggedIn = false;
+            }
         }
+
 
         [RelayCommand]
         private async Task Login()

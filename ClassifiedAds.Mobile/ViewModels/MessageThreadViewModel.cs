@@ -180,6 +180,8 @@ namespace ClassifiedAds.Mobile.ViewModels
                 Content = contentToSend
             };
 
+          
+
             // Use SignalR to send. The Backend Hub will broadcast "NewMessage" back to us.
             // So we don't strictly need to add it to the list manually here, 
             // BUT adding it manually makes the UI feel faster (Optimistic UI).
@@ -191,6 +193,8 @@ namespace ClassifiedAds.Mobile.ViewModels
             {
                 await Shell.Current.DisplayAlert("Error", "Failed to send via SignalR", "OK");
             }
+
+            Messages.Add(new MessageUiModel {  });
         }
     }
 
