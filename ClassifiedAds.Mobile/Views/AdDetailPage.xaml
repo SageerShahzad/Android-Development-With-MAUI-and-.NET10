@@ -66,7 +66,7 @@
             </HorizontalStackLayout>
 
             <VerticalStackLayout Grid.Row="3" Spacing="10">
-                <BoxView HeightRequest="1" Color="LightGray" />
+
 
                 <Label Text="Description" 
                        FontSize="18" 

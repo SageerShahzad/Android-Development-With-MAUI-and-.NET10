@@ -35,6 +35,9 @@ public static class MauiProgram
             client.Timeout = TimeSpan.FromSeconds(30);
         });
 
+        // Inside MauiProgram.cs
+        builder.Services.AddTransient<LoginPage>(); // Add this line
+
         // 2. Authentication (MUST BE SINGLETON for UserAuthViewModel to keep state)
         builder.Services.AddSingleton<IUserAuthRepository, UserAuthRepository>();
         builder.Services.AddSingleton<IUserAuthService, UserAuthService>();

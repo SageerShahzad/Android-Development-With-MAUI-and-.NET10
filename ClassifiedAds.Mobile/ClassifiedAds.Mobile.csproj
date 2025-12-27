@@ -90,6 +90,9 @@
 	  <MauiXaml Update="Views\EditProfilePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\MessageThreadPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
