@@ -11,6 +11,7 @@ namespace ClassifiedAds.Mobile.ViewModels;
 public partial class AdsViewModel : ObservableObject
 {
     private readonly IAdService _adService;
+    private readonly LookupService _lookupService; // Inject the new service
     private List<AdDTO> _allAdsBackup = new();
 
     [ObservableProperty]
@@ -21,125 +22,153 @@ public partial class AdsViewModel : ObservableObject
 
     // --- FILTER PROPERTIES ---
     [ObservableProperty]
-    private string selectedCategory = "All";
+    [NotifyPropertyChangedFor(nameof(CategoryDisplayText))]
+    [NotifyPropertyChangedFor(nameof(CategoryTextColor))]
+    private string selectedCategory;
 
     [ObservableProperty]
-    private string selectedCountry = "All";
+    [NotifyPropertyChangedFor(nameof(CountryDisplayText))]
+    [NotifyPropertyChangedFor(nameof(CountryTextColor))]
+    private string selectedCountry;
 
     [ObservableProperty]
-    private decimal maxPriceFilter = 1000000; // Default high
+    private string cityFilter;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasFilterMessage))] // <--- ADD THIS LINE
+    private string postalCodeFilter;
+
+    // REMOVED: MaxPriceFilter, MaxPriceLimit
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFilterMessage))]
     private string filterStatusMessage = "";
 
-    // ADD THIS NEW PROPERTY
     public bool HasFilterMessage => !string.IsNullOrEmpty(FilterStatusMessage);
+
+    // --- DISPLAY HELPERS ---
+    public string CategoryDisplayText =>
+        (string.IsNullOrEmpty(SelectedCategory) || SelectedCategory == "All") ? "Select Category" : SelectedCategory;
+
+    public Color CategoryTextColor =>
+        (string.IsNullOrEmpty(SelectedCategory) || SelectedCategory == "All") ? Colors.Gray : Colors.Black;
+
+    public string CountryDisplayText =>
+        (string.IsNullOrEmpty(SelectedCountry) || SelectedCountry == "All") ? "Select Country" : SelectedCountry;
+
+    public Color CountryTextColor =>
+        (string.IsNullOrEmpty(SelectedCountry) || SelectedCountry == "All") ? Colors.Gray : Colors.Black;
 
     // --- COLLECTIONS ---
     public ObservableCollection<AdDTO> Ads { get; } = new();
     public ObservableCollection<string> Categories { get; } = new();
     public ObservableCollection<string> Countries { get; } = new();
 
-    public AdsViewModel(IAdService adService)
+    public AdsViewModel(IAdService adService, LookupService lookupService)
     {
         _adService = adService;
-        // Load data immediately
-        LoadAdsCommand.ExecuteAsync(null);
+        _lookupService = lookupService;
+
+        // Fire and forget: Load both data streams concurrently
+        InitializeData();
+    }
+
+    private async void InitializeData()
+    {
+        IsBusy = true;
+        // Run API calls in parallel for speed
+        var t1 = LoadAds();
+        var t2 = LoadLookupData();
+        await Task.WhenAll(t1, t2);
+        IsBusy = false;
+    }
+
+    private async Task LoadLookupData()
+    {
+        // Fetch Categories and Countries from your API endpoints
+        var cats = await _lookupService.GetCategoriesAsync();
+        var countries = await _lookupService.GetCountriesAsync();
+
+        Categories.Clear();
+        Categories.Add("All");
+        foreach (var c in cats) Categories.Add(c);
+
+        Countries.Clear();
+        Countries.Add("All");
+        foreach (var c in countries) Countries.Add(c);
     }
 
     [RelayCommand]
     private async Task LoadAds()
     {
-        if (IsBusy) return;
-        IsBusy = true;
-
         try
         {
             var adsList = await _adService.GetAds();
             _allAdsBackup = adsList ?? new List<AdDTO>();
-
-            // 1. Extract Categories
-            var cats = _allAdsBackup.Select(x => x.Category).Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c);
-            Categories.Clear();
-            Categories.Add("All");
-            foreach (var c in cats) Categories.Add(c);
-
-            // 2. Extract Countries (For the filter page)
-            var countries = _allAdsBackup.Select(x => x.Country).Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c);
-            Countries.Clear();
-            Countries.Add("All");
-            foreach (var c in countries) Countries.Add(c);
-
             ApplyFilters();
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error: {ex.Message}");
         }
-        finally
-        {
-            IsBusy = false;
-        }
     }
 
     [RelayCommand]
     public void ApplyFilters()
     {
-        FilterStatusMessage = ""; // Reset message
-
-        // 1. Start with full list
+        FilterStatusMessage = "";
         var query = _allAdsBackup.AsEnumerable();
 
-        // 2. Apply Text Search
         if (!string.IsNullOrWhiteSpace(SearchText))
         {
             var lower = SearchText.ToLower();
-            query = query.Where(x => x.Title.ToLower().Contains(lower) || x.City.ToLower().Contains(lower));
+            query = query.Where(x => x.Title.ToLower().Contains(lower) || x.Description.ToLower().Contains(lower));
         }
 
-        // 3. Apply Hard Filters (Category & Price)
-        if (SelectedCategory != "All")
+        if (SelectedCategory != "All" && !string.IsNullOrEmpty(SelectedCategory))
             query = query.Where(x => x.Category == SelectedCategory);
 
-        if (MaxPriceFilter > 0)
-            query = query.Where(x => (x.Price ?? 0) <= MaxPriceFilter);
-
-        // 4. Apply Country Filter
-        if (SelectedCountry != "All")
+        if (SelectedCountry != "All" && !string.IsNullOrEmpty(SelectedCountry))
             query = query.Where(x => x.Country == SelectedCountry);
+
+        if (!string.IsNullOrWhiteSpace(CityFilter))
+            query = query.Where(x => x.City.ToLower().Contains(CityFilter.ToLower()));
+
+        if (!string.IsNullOrWhiteSpace(PostalCodeFilter))
+            query = query.Where(x => x.PostalCode.ToLower().Contains(PostalCodeFilter.ToLower()));
+
+        // REMOVED: MaxPrice check
 
         var finalList = query.ToList();
 
-        // --- SMART FALLBACK LOGIC ---
-        // If the user selected a Country but got 0 results, we try to show them ads
-        // from the same Category but in *other* countries.
-        if (finalList.Count == 0 && SelectedCountry != "All")
+        if (finalList.Count == 0)
         {
-            FilterStatusMessage = $"No results in {SelectedCountry}. Showing similar items elsewhere.";
-
-            // Re-run query ignoring country
-            finalList = _allAdsBackup
-                .Where(x => x.Category == SelectedCategory && (x.Price ?? 0) <= MaxPriceFilter)
-                .ToList();
-        }
-        else if (finalList.Count == 0)
-        {
-            FilterStatusMessage = "No ads found matching your criteria.";
+            FilterStatusMessage = "No exact matches found. Showing all items.";
+            finalList = _allAdsBackup.ToList();
         }
 
-        // 5. Update UI
         Ads.Clear();
         foreach (var ad in finalList) Ads.Add(ad);
     }
 
     [RelayCommand]
-    private async Task OpenFilters()
+    private void ResetFilters()
     {
-        // Navigate to the Filter Page
-        await Shell.Current.Navigation.PushModalAsync(new FilterPage(this));
+        SelectedCategory = "All";
+        SelectedCountry = "All";
+        CityFilter = string.Empty;
+        PostalCodeFilter = string.Empty;
+        ApplyFilters();
     }
 
+    [RelayCommand]
+    private async Task OpenFilters()
+    {
+        await Shell.Current.Navigation.PushModalAsync(new FilterPage(this));
+    }
+    
+    // ... Other navigation commands ...
+
+    
     [RelayCommand]
     private void SelectCategory(string category)
     {

@@ -4,71 +4,97 @@
              xmlns:vm="clr-namespace:ClassifiedAds.Mobile.ViewModels"
              x:Class="ClassifiedAds.Mobile.Views.FilterPage"
              BackgroundColor="White"
-             Title="Filter Ads">
+             Title="Filter">
 
-    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
+    <Grid RowDefinitions="Auto, *, Auto" Padding="0">
 
-        <Label Grid.Row="0" 
-               Text="Filter Options" 
-               FontSize="24" 
-               FontAttributes="Bold" 
-               Margin="0,0,0,20"/>
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,10">
+            <Label Text="Filters" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   TextColor="Black"
+                   VerticalOptions="Center"/>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="20">
+            <Button Grid.Column="1"
+                    Text="Reset"
+                    Command="{Binding ResetFiltersCommand}"
+                    TextColor="#6200EE"
+                    BackgroundColor="Transparent"
+                    FontAttributes="Bold"
+                    Padding="0"
+                    HeightRequest="40"/>
+        </Grid>
 
-                <Label Text="Category" 
-                       FontAttributes="Bold" 
-                       TextColor="#6200EE"/>
+        <ScrollView Grid.Row="1" Padding="20,0">
+            <VerticalStackLayout Spacing="25">
 
-                <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 10" Padding="10,0">
-                    <Picker ItemsSource="{Binding Categories}" 
-                            SelectedItem="{Binding SelectedCategory}"
-                            Title="Select Category"/>
-                </Border>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Category" FontAttributes="Bold" TextColor="#333"/>
+                    <Border StrokeThickness="0" BackgroundColor="#F5F6F8" StrokeShape="RoundRectangle 12" HeightRequest="50" Padding="15,0">
+                        <Grid>
+                            <Grid ColumnDefinitions="*, 30" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="{Binding CategoryDisplayText}" TextColor="{Binding CategoryTextColor}" VerticalOptions="Center" LineBreakMode="TailTruncation"/>
+                                <Label Grid.Column="1" Text="▼" TextColor="Gray" VerticalOptions="Center" HorizontalOptions="Center" FontSize="12"/>
+                            </Grid>
 
-                <Label Text="Country" 
-                       FontAttributes="Bold" 
-                       TextColor="#6200EE"/>
+                            <Picker ItemsSource="{Binding Categories}" 
+                                    SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                    Title="Select Category"
+                                    TextColor="Transparent"
+                                    TitleColor="Transparent"
+                                    BackgroundColor="Transparent"
+                                    Opacity="0.01"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Fill"/>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
 
-                <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 10" Padding="10,0">
-                    <Picker ItemsSource="{Binding Countries}" 
-                            SelectedItem="{Binding SelectedCountry}"
-                            Title="Select Country"/>
-                </Border>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Country" FontAttributes="Bold" TextColor="#333"/>
+                    <Border StrokeThickness="0" BackgroundColor="#F5F6F8" StrokeShape="RoundRectangle 12" HeightRequest="50" Padding="15,0">
+                        <Grid>
+                            <Grid ColumnDefinitions="*, 30" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="{Binding CountryDisplayText}" TextColor="{Binding CountryTextColor}" VerticalOptions="Center" LineBreakMode="TailTruncation"/>
+                                <Label Grid.Column="1" Text="▼" TextColor="Gray" VerticalOptions="Center" HorizontalOptions="Center" FontSize="12"/>
+                            </Grid>
 
-                <Label Text="Maximum Price" 
-                       FontAttributes="Bold" 
-                       TextColor="#6200EE"/>
+                            <Picker ItemsSource="{Binding Countries}" 
+                                    SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
+                                    Title="Select Country"
+                                    TextColor="Transparent"
+                                    TitleColor="Transparent"
+                                    BackgroundColor="Transparent"
+                                    Opacity="0.01"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Fill"/>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
 
-                <Grid ColumnDefinitions="*, Auto">
-                    <Slider Value="{Binding MaxPriceFilter}" 
-                            Maximum="100000" 
-                            Minimum="0" 
-                            Grid.Column="0"/>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="City" FontAttributes="Bold" TextColor="#333"/>
+                    <Border StrokeThickness="0" BackgroundColor="#F5F6F8" StrokeShape="RoundRectangle 12" HeightRequest="50" Padding="15,0">
+                        <Entry Placeholder="Enter city name" Text="{Binding CityFilter}" TextColor="Black" PlaceholderColor="Gray" VerticalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
 
-                    <Label Text="{Binding MaxPriceFilter, StringFormat='{0:C0}'}" 
-                           Grid.Column="1" 
-                           VerticalOptions="Center" 
-                           FontAttributes="Bold"/>
-                </Grid>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Postal Code" FontAttributes="Bold" TextColor="#333"/>
+                    <Border StrokeThickness="0" BackgroundColor="#F5F6F8" StrokeShape="RoundRectangle 12" HeightRequest="50" Padding="15,0">
+                        <Entry Placeholder="Enter postal code" Text="{Binding PostalCodeFilter}" TextColor="Black" PlaceholderColor="Gray" VerticalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
 
+                <BoxView HeightRequest="20" />
             </VerticalStackLayout>
         </ScrollView>
 
-        <VerticalStackLayout Grid.Row="2" Spacing="10" Margin="0,20,0,0">
-            <Button Text="Apply Filters" 
-                    Clicked="OnApplyClicked"
-                    BackgroundColor="Black" 
-                    TextColor="White" 
-                    CornerRadius="25" 
-                    HeightRequest="50"
-                    FontAttributes="Bold"/>
-
-            <Button Text="Close" 
-                    Clicked="OnCloseClicked"
-                    BackgroundColor="Transparent" 
-                    TextColor="Gray"/>
-        </VerticalStackLayout>
+        <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="White" Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=10, Offset='0,-5'}">
+            <VerticalStackLayout Spacing="10">
+                <Button Text="Show Results" Clicked="OnApplyClicked" BackgroundColor="Black" TextColor="White" CornerRadius="25" HeightRequest="50" FontAttributes="Bold"/>
+                <Button Text="Cancel" Clicked="OnCloseClicked" BackgroundColor="Transparent" TextColor="Gray" HeightRequest="40"/>
+            </VerticalStackLayout>
+        </Border>
     </Grid>
 </ContentPage>

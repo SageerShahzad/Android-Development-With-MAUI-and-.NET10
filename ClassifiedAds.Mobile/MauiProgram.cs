@@ -60,6 +60,8 @@ public static class MauiProgram
         builder.Services.AddTransient<AdDetailViewModel>();
         builder.Services.AddTransient<AdDetailPage>();
 
+        builder.Services.AddSingleton<LookupService>();
+
         // In MauiProgram.cs
         builder.Services.AddSingleton<SignalRService>(); // Add this line
         // Add these lines in your CreateMauiApp method
