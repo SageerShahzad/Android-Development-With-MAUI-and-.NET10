@@ -30,6 +30,7 @@ public partial class AdDetailViewModel : ObservableObject
     [ObservableProperty] private string country;
     [ObservableProperty] private string mainImageUrl;
     [ObservableProperty] private string category;
+    [ObservableProperty] private string subCategory;
     [ObservableProperty] private DateTime createdDate;
     [ObservableProperty] private string memberId;
 
@@ -66,6 +67,7 @@ public partial class AdDetailViewModel : ObservableObject
                 City = adDto.City;
                 Country = adDto.Country;
                 Category = adDto.Category;
+                SubCategory = adDto.SubCategory;
                 CreatedDate = adDto.CreatedDate;
                 MemberId = adDto.MemberId;
                 MainImageUrl = !string.IsNullOrEmpty(adDto.MainImageUrl) ? adDto.MainImageUrl : "dotnet_bot.png";

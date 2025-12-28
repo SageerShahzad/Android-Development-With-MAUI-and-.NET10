@@ -4,29 +4,116 @@
              xmlns:vm="clr-namespace:ClassifiedAds.Mobile.ViewModels"
              xmlns:models="clr-namespace:ClassifiedAds.Mobile.Models"
              x:Class="ClassifiedAds.Mobile.Views.AdsPage"
-             Title="Classified Ads">
+             Title="Discover"
+             BackgroundColor="#F5F5F5">
 
-    <RefreshView Command="{Binding LoadAdsCommand}" IsRefreshing="{Binding IsBusy}">
-        <CollectionView ItemsSource="{Binding Ads}" SelectionMode="None">
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+
+        <Grid Grid.Row="0" BackgroundColor="Black" Padding="15,10,15,20">
+            <Grid ColumnDefinitions="*, 50">
+
+                <Border Grid.Column="0" 
+                        StrokeShape="RoundRectangle 25" 
+                        BackgroundColor="White" 
+                        HeightRequest="50"
+                        Padding="10,0"
+                        Margin="0,0,10,0">
+                    <Grid ColumnDefinitions="30, *">
+                        <Label Text="🔍" VerticalOptions="Center" HorizontalOptions="Center" />
+                        <Entry Grid.Column="1" 
+                               Placeholder="Search..." 
+                               Text="{Binding SearchText}"
+                                TextColor="#000000"               
+                               VerticalOptions="Center"
+                               ClearButtonVisibility="WhileEditing"/>
+                    </Grid>
+                </Border>
+
+                <ImageButton Grid.Column="1"
+                             Source="filter_icon.png" 
+                             BackgroundColor="#333333"
+                             CornerRadius="10"
+                             
+                             Padding="10"
+                             Command="{Binding OpenFiltersCommand}">
+                    <ImageButton.Source>
+                        <FontImageSource Glyph="F" FontFamily="OpenSansRegular" Color="White"/>
+                    </ImageButton.Source>
+                </ImageButton>
+            </Grid>
+        </Grid>
+
+        <CollectionView Grid.Row="1" 
+                        ItemsSource="{Binding Categories}" 
+                        HeightRequest="60"
+                        SelectionMode="Single"
+                        HorizontalScrollBarVisibility="Never"
+                        ItemsLayout="HorizontalList"
+                        Margin="15,10">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:AdDTO">
-                    <Grid Padding="10">
-                        <Frame HeightRequest="120" Padding="0" CornerRadius="10">
-                            <Grid ColumnDefinitions="120, *">
-                                <Image Grid.Column="0" Source="{Binding MainImageUrl}" Aspect="AspectFill" BackgroundColor="LightGray"/>
-                                <VerticalStackLayout Grid.Column="1" Padding="10" Spacing="5">
-                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" LineBreakMode="TailTruncation"/>
-                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" TextColor="Green" FontAttributes="Bold"/>
-                                    <Label Text="{Binding City}" TextColor="Gray" FontSize="12"/>
-                                </VerticalStackLayout>
-                            </Grid>
-                            <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdsViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}"/>
-                            </Frame.GestureRecognizers>
-                        </Frame>
+                <DataTemplate>
+                    <Grid Padding="0,0,10,0">
+                        <Border StrokeShape="RoundRectangle 20"
+                                BackgroundColor="White"
+                                Padding="15,8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdsViewModel}}, Path=SelectCategoryCommand}"
+                                                      CommandParameter="{Binding .}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding .}" TextColor="Black" FontAttributes="Bold" VerticalOptions="Center"/>
+                        </Border>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </RefreshView>
+
+        <Label Grid.Row="2" 
+               Text="{Binding FilterStatusMessage}" 
+               IsVisible="{Binding HasFilterMessage}" 
+               TextColor="#D32F2F" 
+               FontSize="12" 
+               HorizontalOptions="Center" 
+               Margin="0,0,0,10"/>
+
+        <RefreshView Grid.Row="3" Command="{Binding LoadAdsCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Ads}" SelectionMode="None" Margin="15,0">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="15"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:AdDTO">
+
+                        <Border BackgroundColor="White" StrokeShape="RoundRectangle 15" Padding="0">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Opacity="0.1" Radius="5" Offset="0,2"/>
+                            </Border.Shadow>
+
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdsViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}"/>
+                            </Border.GestureRecognizers>
+
+                            <Grid RowDefinitions="180, Auto" Padding="0">
+                                <Image Grid.Row="0" Source="{Binding MainImageUrl}" Aspect="AspectFill" BackgroundColor="#EEEEEE"/>
+
+                                <Border Grid.Row="0" HorizontalOptions="Start" VerticalOptions="Start" Margin="10" BackgroundColor="Black" StrokeShape="RoundRectangle 8" Padding="8,4">
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" TextColor="White" FontAttributes="Bold" FontSize="12"/>
+                                </Border>
+
+                                <VerticalStackLayout Grid.Row="1" Padding="15" Spacing="5">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Label Text="{Binding Category}" FontSize="10" TextColor="#6200EE" TextTransform="Uppercase" FontAttributes="Bold"/>
+                                        <Label Text="{Binding CreatedDate, StringFormat='{0:MMM dd}'}" FontSize="10" TextColor="Gray" Grid.Column="1"/>
+                                    </Grid>
+
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" LineBreakMode="TailTruncation" TextColor="Gray"/>
+                                    <Label Text="{Binding City}" TextColor="Gray" FontSize="13"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
 </ContentPage>

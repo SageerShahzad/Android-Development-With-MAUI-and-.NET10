@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ClassifiedAds.Mobile.ViewModels"
+             x:Class="ClassifiedAds.Mobile.Views.FilterPage"
+             BackgroundColor="White"
+             Title="Filter Ads">
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
+
+        <Label Grid.Row="0" 
+               Text="Filter Options" 
+               FontSize="24" 
+               FontAttributes="Bold" 
+               Margin="0,0,0,20"/>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="20">
+
+                <Label Text="Category" 
+                       FontAttributes="Bold" 
+                       TextColor="#6200EE"/>
+
+                <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 10" Padding="10,0">
+                    <Picker ItemsSource="{Binding Categories}" 
+                            SelectedItem="{Binding SelectedCategory}"
+                            Title="Select Category"/>
+                </Border>
+
+                <Label Text="Country" 
+                       FontAttributes="Bold" 
+                       TextColor="#6200EE"/>
+
+                <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 10" Padding="10,0">
+                    <Picker ItemsSource="{Binding Countries}" 
+                            SelectedItem="{Binding SelectedCountry}"
+                            Title="Select Country"/>
+                </Border>
+
+                <Label Text="Maximum Price" 
+                       FontAttributes="Bold" 
+                       TextColor="#6200EE"/>
+
+                <Grid ColumnDefinitions="*, Auto">
+                    <Slider Value="{Binding MaxPriceFilter}" 
+                            Maximum="100000" 
+                            Minimum="0" 
+                            Grid.Column="0"/>
+
+                    <Label Text="{Binding MaxPriceFilter, StringFormat='{0:C0}'}" 
+                           Grid.Column="1" 
+                           VerticalOptions="Center" 
+                           FontAttributes="Bold"/>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="10" Margin="0,20,0,0">
+            <Button Text="Apply Filters" 
+                    Clicked="OnApplyClicked"
+                    BackgroundColor="Black" 
+                    TextColor="White" 
+                    CornerRadius="25" 
+                    HeightRequest="50"
+                    FontAttributes="Bold"/>
+
+            <Button Text="Close" 
+                    Clicked="OnCloseClicked"
+                    BackgroundColor="Transparent" 
+                    TextColor="Gray"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
