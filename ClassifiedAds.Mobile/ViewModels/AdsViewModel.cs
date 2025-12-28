@@ -11,14 +11,14 @@ namespace ClassifiedAds.Mobile.ViewModels;
 public partial class AdsViewModel : ObservableObject
 {
     private readonly IAdService _adService;
-    private readonly LookupService _lookupService; // Inject the new service
+    private readonly LookupService _lookupService;
     private List<AdDTO> _allAdsBackup = new();
 
-    [ObservableProperty]
-    private bool isBusy;
+    // Store country objects to map Name -> ID
+    private List<CountryDto> _allCountryObjects = new();
 
-    [ObservableProperty]
-    private string searchText;
+    [ObservableProperty] private bool isBusy;
+    [ObservableProperty] private string searchText;
 
     // --- FILTER PROPERTIES ---
     [ObservableProperty]
@@ -26,56 +26,56 @@ public partial class AdsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CategoryTextColor))]
     private string selectedCategory;
 
+    // Trigger City loading when Country changes
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CountryDisplayText))]
     [NotifyPropertyChangedFor(nameof(CountryTextColor))]
     private string selectedCountry;
 
-    [ObservableProperty]
-    private string cityFilter;
+    partial void OnSelectedCountryChanged(string value)
+    {
+        // Fire and forget logic to load cities
+        _ = LoadCitiesForSelectedCountry();
+    }
 
+    // NEW: City Selection
     [ObservableProperty]
-    private string postalCodeFilter;
+    [NotifyPropertyChangedFor(nameof(CityDisplayText))]
+    [NotifyPropertyChangedFor(nameof(CityTextColor))]
+    private string selectedCity;
 
-    // REMOVED: MaxPriceFilter, MaxPriceLimit
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasFilterMessage))]
-    private string filterStatusMessage = "";
+    [ObservableProperty] private string postalCodeFilter;
+    [ObservableProperty][NotifyPropertyChangedFor(nameof(HasFilterMessage))] private string filterStatusMessage = "";
 
     public bool HasFilterMessage => !string.IsNullOrEmpty(FilterStatusMessage);
 
     // --- DISPLAY HELPERS ---
-    public string CategoryDisplayText =>
-        (string.IsNullOrEmpty(SelectedCategory) || SelectedCategory == "All") ? "Select Category" : SelectedCategory;
+    public string CategoryDisplayText => (string.IsNullOrEmpty(SelectedCategory) || SelectedCategory == "All") ? "Select Category" : SelectedCategory;
+    public Color CategoryTextColor => (string.IsNullOrEmpty(SelectedCategory) || SelectedCategory == "All") ? Colors.Gray : Colors.Black;
 
-    public Color CategoryTextColor =>
-        (string.IsNullOrEmpty(SelectedCategory) || SelectedCategory == "All") ? Colors.Gray : Colors.Black;
+    public string CountryDisplayText => (string.IsNullOrEmpty(SelectedCountry) || SelectedCountry == "All") ? "Select Country" : SelectedCountry;
+    public Color CountryTextColor => (string.IsNullOrEmpty(SelectedCountry) || SelectedCountry == "All") ? Colors.Gray : Colors.Black;
 
-    public string CountryDisplayText =>
-        (string.IsNullOrEmpty(SelectedCountry) || SelectedCountry == "All") ? "Select Country" : SelectedCountry;
-
-    public Color CountryTextColor =>
-        (string.IsNullOrEmpty(SelectedCountry) || SelectedCountry == "All") ? Colors.Gray : Colors.Black;
+    // City Helpers
+    public string CityDisplayText => (string.IsNullOrEmpty(SelectedCity) || SelectedCity == "All") ? "Select City" : SelectedCity;
+    public Color CityTextColor => (string.IsNullOrEmpty(SelectedCity) || SelectedCity == "All") ? Colors.Gray : Colors.Black;
 
     // --- COLLECTIONS ---
     public ObservableCollection<AdDTO> Ads { get; } = new();
     public ObservableCollection<string> Categories { get; } = new();
     public ObservableCollection<string> Countries { get; } = new();
+    public ObservableCollection<string> Cities { get; } = new(); // NEW Collection
 
     public AdsViewModel(IAdService adService, LookupService lookupService)
     {
         _adService = adService;
         _lookupService = lookupService;
-
-        // Fire and forget: Load both data streams concurrently
         InitializeData();
     }
 
     private async void InitializeData()
     {
         IsBusy = true;
-        // Run API calls in parallel for speed
         var t1 = LoadAds();
         var t2 = LoadLookupData();
         await Task.WhenAll(t1, t2);
@@ -84,9 +84,9 @@ public partial class AdsViewModel : ObservableObject
 
     private async Task LoadLookupData()
     {
-        // Fetch Categories and Countries from your API endpoints
         var cats = await _lookupService.GetCategoriesAsync();
-        var countries = await _lookupService.GetCountriesAsync();
+        // Fetch full country objects
+        _allCountryObjects = await _lookupService.GetCountriesAsync();
 
         Categories.Clear();
         Categories.Add("All");
@@ -94,7 +94,25 @@ public partial class AdsViewModel : ObservableObject
 
         Countries.Clear();
         Countries.Add("All");
-        foreach (var c in countries) Countries.Add(c);
+        foreach (var c in _allCountryObjects) Countries.Add(c.Name);
+    }
+
+    private async Task LoadCitiesForSelectedCountry()
+    {
+        Cities.Clear();
+        SelectedCity = null; // Reset previous city selection
+
+        if (string.IsNullOrEmpty(SelectedCountry) || SelectedCountry == "All") return;
+
+        // Find ID based on Name
+        var countryObj = _allCountryObjects.FirstOrDefault(c => c.Name == SelectedCountry);
+        if (countryObj == null) return;
+
+        // Fetch cities
+        var cities = await _lookupService.GetCitiesByCountryAsync(countryObj.Id);
+
+        Cities.Add("All");
+        foreach (var city in cities) Cities.Add(city);
     }
 
     [RelayCommand]
@@ -130,13 +148,12 @@ public partial class AdsViewModel : ObservableObject
         if (SelectedCountry != "All" && !string.IsNullOrEmpty(SelectedCountry))
             query = query.Where(x => x.Country == SelectedCountry);
 
-        if (!string.IsNullOrWhiteSpace(CityFilter))
-            query = query.Where(x => x.City.ToLower().Contains(CityFilter.ToLower()));
+        // Updated City Logic: Exact match on selection
+        if (SelectedCity != "All" && !string.IsNullOrEmpty(SelectedCity))
+            query = query.Where(x => x.City == SelectedCity);
 
         if (!string.IsNullOrWhiteSpace(PostalCodeFilter))
             query = query.Where(x => x.PostalCode.ToLower().Contains(PostalCodeFilter.ToLower()));
-
-        // REMOVED: MaxPrice check
 
         var finalList = query.ToList();
 
@@ -155,7 +172,7 @@ public partial class AdsViewModel : ObservableObject
     {
         SelectedCategory = "All";
         SelectedCountry = "All";
-        CityFilter = string.Empty;
+        SelectedCity = null;
         PostalCodeFilter = string.Empty;
         ApplyFilters();
     }
@@ -165,8 +182,6 @@ public partial class AdsViewModel : ObservableObject
     {
         await Shell.Current.Navigation.PushModalAsync(new FilterPage(this));
     }
-    
-    // ... Other navigation commands ...
 
     
     [RelayCommand]

@@ -75,14 +75,42 @@
                 <VerticalStackLayout Spacing="8">
                     <Label Text="City" FontAttributes="Bold" TextColor="#333"/>
                     <Border StrokeThickness="0" BackgroundColor="#F5F6F8" StrokeShape="RoundRectangle 12" HeightRequest="50" Padding="15,0">
-                        <Entry Placeholder="Enter city name" Text="{Binding CityFilter}" TextColor="Black" PlaceholderColor="Gray" VerticalOptions="Center"/>
+                        <Grid>
+                            <Grid ColumnDefinitions="*, 30" VerticalOptions="Center">
+                                <Label Grid.Column="0" 
+                                       Text="{Binding CityDisplayText}" 
+                                       TextColor="{Binding CityTextColor}" 
+                                       VerticalOptions="Center" 
+                                       LineBreakMode="TailTruncation"/>
+                                <Label Grid.Column="1" 
+                                       Text="▼" 
+                                       TextColor="Gray" 
+                                       VerticalOptions="Center" 
+                                       HorizontalOptions="Center" 
+                                       FontSize="12"/>
+                            </Grid>
+
+                            <Picker ItemsSource="{Binding Cities}" 
+                                    SelectedItem="{Binding SelectedCity, Mode=TwoWay}" 
+                                    Title="Select City" 
+                                    TextColor="Transparent" 
+                                    TitleColor="Transparent" 
+                                    BackgroundColor="Transparent" 
+                                    Opacity="0.01" 
+                                    HorizontalOptions="Fill" 
+                                    VerticalOptions="Fill"/>
+                        </Grid>
                     </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Postal Code" FontAttributes="Bold" TextColor="#333"/>
                     <Border StrokeThickness="0" BackgroundColor="#F5F6F8" StrokeShape="RoundRectangle 12" HeightRequest="50" Padding="15,0">
-                        <Entry Placeholder="Enter postal code" Text="{Binding PostalCodeFilter}" TextColor="Black" PlaceholderColor="Gray" VerticalOptions="Center"/>
+                        <Entry Placeholder="Enter postal code" 
+                               Text="{Binding PostalCodeFilter}" 
+                               TextColor="Black" 
+                               PlaceholderColor="Gray" 
+                               VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
 
@@ -92,8 +120,18 @@
 
         <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="White" Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=10, Offset='0,-5'}">
             <VerticalStackLayout Spacing="10">
-                <Button Text="Show Results" Clicked="OnApplyClicked" BackgroundColor="Black" TextColor="White" CornerRadius="25" HeightRequest="50" FontAttributes="Bold"/>
-                <Button Text="Cancel" Clicked="OnCloseClicked" BackgroundColor="Transparent" TextColor="Gray" HeightRequest="40"/>
+                <Button Text="Show Results" 
+                        Clicked="OnApplyClicked" 
+                        BackgroundColor="Black" 
+                        TextColor="White" 
+                        CornerRadius="25" 
+                        HeightRequest="50" 
+                        FontAttributes="Bold"/>
+                <Button Text="Cancel" 
+                        Clicked="OnCloseClicked" 
+                        BackgroundColor="Transparent" 
+                        TextColor="Gray" 
+                        HeightRequest="40"/>
             </VerticalStackLayout>
         </Border>
     </Grid>

@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using ClassifiedAds.Mobile.Models; // Ensure you have DTOs here
+using ClassifiedAds.Mobile.Models; // Ensure DTOs are here
 
 namespace ClassifiedAds.Mobile.Services;
 
@@ -16,9 +16,7 @@ public class LookupService
     {
         try
         {
-            var client = _httpClientFactory.CreateClient("AdsApi"); // Ensure your HttpClient is named/configured
-            // Assuming your Category entity has a 'Name' property
-            // We fetch the list and project it to strings for the Picker
+            var client = _httpClientFactory.CreateClient("AdsApi");
             var result = await client.GetFromJsonAsync<List<CategoryDto>>("api/categories");
             return result?.Select(x => x.Name).ToList() ?? new List<string>();
         }
@@ -29,22 +27,40 @@ public class LookupService
         }
     }
 
-    public async Task<List<string>> GetCountriesAsync()
+    // UPDATED: Return full objects to get IDs
+    public async Task<List<CountryDto>> GetCountriesAsync()
     {
         try
         {
             var client = _httpClientFactory.CreateClient("AdsApi");
-            var result = await client.GetFromJsonAsync<List<CountryDto>>("api/countries");
-            return result?.Select(x => x.Name).ToList() ?? new List<string>();
+            return await client.GetFromJsonAsync<List<CountryDto>>("api/countries") ?? new List<CountryDto>();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Country Fetch Error: {ex.Message}");
+            return new List<CountryDto>();
+        }
+    }
+
+    // NEW: Fetch Cities by Country ID
+    public async Task<List<string>> GetCitiesByCountryAsync(int countryId)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("AdsApi");
+            // Calls: api/cities/bycountry/{id}
+            var result = await client.GetFromJsonAsync<List<CityDto>>($"api/cities/bycountry/{countryId}");
+            return result?.Select(x => x.Name).ToList() ?? new List<string>();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"City Fetch Error: {ex.Message}");
             return new List<string>();
         }
     }
 }
 
-// Simple DTO classes if you don't share them with API
+// Simple DTOs (Add to Models folder if not present)
 public class CategoryDto { public int Id { get; set; } public string Name { get; set; } }
 public class CountryDto { public int Id { get; set; } public string Name { get; set; } }
+public class CityDto { public int Id { get; set; } public string Name { get; set; } public int CountryId { get; set; } }
