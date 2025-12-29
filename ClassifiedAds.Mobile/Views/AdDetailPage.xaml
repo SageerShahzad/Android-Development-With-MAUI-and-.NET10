@@ -57,13 +57,7 @@
                                TextColor="#00C853" 
                                FontAttributes="Bold"/>
 
-                        <!--<VerticalStackLayout Grid.Column="1" Grid.RowSpan="2" HorizontalOptions="End">
-                            <Label Text="Edit Price" FontSize="10" HorizontalTextAlignment="Center" TextColor="Gray"/>
-                            <Stepper Increment="10"
-                                     Maximum="500000" 
-                                     Minimum="0"
-                                     Value="{Binding Price, Mode=TwoWay}"/>
-                        </VerticalStackLayout>-->
+                       
                     </Grid>
 
                     <BoxView HeightRequest="1" Color="#E0E0E0" />

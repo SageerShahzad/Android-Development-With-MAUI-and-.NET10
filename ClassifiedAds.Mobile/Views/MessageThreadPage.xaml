@@ -57,7 +57,7 @@
                                    HorizontalOptions="{Binding Alignment}"/>
 
                                 <Border BackgroundColor="{Binding BubbleColor}"
-                                        StrokeShape="RoundRectangle 18"
+                                            StrokeShape="RoundRectangle 18,18,18,2"
                                         StrokeThickness="0"
                                         Padding="15,10"
                                         MaximumWidthRequest="260">

@@ -57,6 +57,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="Platforms\Android\Resources\values\styles.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Remove="Resources\Fonts\MaterialIcons-Regular.ttf" />
 		<None Remove="Resources\Images\fallback.jpg" />
 		<None Remove="Resources\Images\globoticket_logo.png" />

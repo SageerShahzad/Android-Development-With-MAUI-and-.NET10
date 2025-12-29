@@ -7,6 +7,7 @@ using ClassifiedAds.Mobile.ViewModels;
 using ClassifiedAds.Mobile.Views;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace ClassifiedAds.Mobile;
 
@@ -33,6 +34,25 @@ public static class MauiProgram
 
             client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromSeconds(30);
+        });
+
+
+        // Add this in CreateMauiApp method
+        builder.ConfigureLifecycleEvents(events =>
+        {
+#if ANDROID
+            events.AddAndroid(android => android
+                .OnCreate((activity, bundle) =>
+                {
+                    // Handle Android-specific initialization
+                    activity.Window?.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
+                })
+                .OnResume(activity =>
+                {
+                    // Fix for keyboard issues on resume
+                    activity.Window?.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
+                }));
+#endif
         });
 
         // Inside MauiProgram.cs
