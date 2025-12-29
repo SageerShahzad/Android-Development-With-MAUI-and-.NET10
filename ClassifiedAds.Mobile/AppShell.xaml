@@ -6,10 +6,44 @@
     xmlns:views="clr-namespace:ClassifiedAds.Mobile.Views"
     Title="ClassifiedAds.Mobile">
 
-   
-    <TabBar>
-        <ShellContent Title="Home" Icon="dotnet_bot.png" ContentTemplate="{DataTemplate views:AdsPage}" />
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*, 50, 50" Padding="0,0,10,0">
 
-        <ShellContent Title="Account" Icon="dotnet_bot.png" ContentTemplate="{DataTemplate views:UserAuthPage}" />
+            <Label Text="VJU" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource Primary}"
+                   VerticalOptions="Center" 
+                   Grid.Column="0"/>
+
+            <ImageButton Grid.Column="1"
+                         Source="search_icon.png" 
+                         Clicked="OnSearchClicked"
+                         HeightRequest="24"
+                         WidthRequest="24"
+                         BackgroundColor="Transparent"
+                         VerticalOptions="Center"/>
+
+            <ImageButton Grid.Column="2"
+                         Source="user_icon.png" 
+                         Clicked="OnAccountClicked"
+                         HeightRequest="24"
+                         WidthRequest="24"
+                         BackgroundColor="Transparent"
+                         VerticalOptions="Center"/>
+        </Grid>
+    </Shell.TitleView>
+
+    <TabBar>
+        <ShellContent Title="Home" 
+                      Icon="home_icon.png" 
+                      Route="Home"
+                      ContentTemplate="{DataTemplate views:AdsPage}" />
+
+        <ShellContent Title="Account" 
+                      Icon="user_icon.png" 
+                      Route="Account"
+                      ContentTemplate="{DataTemplate views:UserAuthPage}" />
     </TabBar>
+
 </Shell>

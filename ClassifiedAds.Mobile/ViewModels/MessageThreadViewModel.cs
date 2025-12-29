@@ -1,7 +1,6 @@
 ﻿using ClassifiedAds.Mobile.Models;
 using ClassifiedAds.Mobile.RepoServices.MemberRepoService;
 using ClassifiedAds.Mobile.RepoServices.MessageRepoService;
-using ClassifiedAds.Mobile.RepoServices.UserAuthRepoService;
 using ClassifiedAds.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,6 +11,8 @@ namespace ClassifiedAds.Mobile.ViewModels
     [QueryProperty(nameof(RecipientId), "RecipientId")]
     public partial class MessageThreadViewModel : ObservableObject
     {
+        private bool _isRecipientOnline = false;
+
         private readonly IMessageService _messageService;
         private readonly IMemberService _memberService;
         private readonly UserAuthViewModel _userAuthViewModel;
@@ -37,11 +38,17 @@ namespace ClassifiedAds.Mobile.ViewModels
             _userAuthViewModel = userAuthViewModel;
             _signalRService = signalRService;
 
+            // Wire up all events
             _signalRService.OnMessageReceived += HandleNewMessage;
+            _signalRService.OnUserOnline += HandleUserOnline;
+            _signalRService.OnUserOffline += HandleUserOffline;
+            _signalRService.OnOnlineUsersReceived += HandleOnlineUsers;
         }
 
         public async Task OnDisappearing()
         {
+            // Unsubscribe to prevent memory leaks is good practice, 
+            // but for now we just disconnect.
             await _signalRService.DisconnectAsync();
         }
 
@@ -70,7 +77,6 @@ namespace ClassifiedAds.Mobile.ViewModels
 
         private async Task LoadHistory()
         {
-            // 1. Fetch Profile and Thread concurrently
             var profileTask = _memberService.GetUserProfileAsync(RecipientId);
             var threadTask = _messageService.GetMessageThreadAsync(RecipientId);
 
@@ -79,15 +85,11 @@ namespace ClassifiedAds.Mobile.ViewModels
             var recipientProfile = profileTask.Result;
             var thread = threadTask.Result;
 
-            // 2. Setup Images
             _recipientImageUrl = !string.IsNullOrEmpty(recipientProfile?.ImageUrl) ? recipientProfile.ImageUrl : "dotnet_bot.png";
             _myImageUrl = !string.IsNullOrEmpty(_userAuthViewModel.ProfileImageUrl) ? _userAuthViewModel.ProfileImageUrl : "dotnet_bot.png";
 
             var currentUserId = _userAuthViewModel.CurrentUserId;
 
-            // 3. Clear and Populate
-            // Optimally, we would use ObservableRangeCollection here to prevent flickering,
-            // but clearing and re-adding is standard if you don't want extra NuGets.
             Messages.Clear();
             foreach (var msg in thread)
             {
@@ -101,9 +103,38 @@ namespace ClassifiedAds.Mobile.ViewModels
             AddMessageToUi(msg, currentUserId);
         }
 
+        // --- PRESENCE HANDLERS ---
+        private void HandleUserOnline(string userId)
+        {
+            if (userId == RecipientId) UpdatePresence(true);
+        }
+
+        private void HandleUserOffline(string userId)
+        {
+            if (userId == RecipientId) UpdatePresence(false);
+        }
+
+        private void HandleOnlineUsers(string[] userIds)
+        {
+            bool online = userIds.Contains(RecipientId);
+            UpdatePresence(online);
+        }
+
+        private void UpdatePresence(bool isOnline)
+        {
+            _isRecipientOnline = isOnline;
+            // Update UI for existing messages
+            foreach (var msg in Messages)
+            {
+                if (!msg.IsMine)
+                {
+                    msg.IsOnline = isOnline;
+                }
+            }
+        }
+
         private void AddMessageToUi(MessageDto msg, string currentUserId)
         {
-            // Case-Insensitive ID Check
             bool isMe = string.Equals(msg.SenderId, currentUserId, StringComparison.OrdinalIgnoreCase);
 
             Messages.Add(new MessageUiModel
@@ -113,7 +144,10 @@ namespace ClassifiedAds.Mobile.ViewModels
                 DateRead = msg.DateRead,
                 IsMine = isMe,
                 SenderDisplayName = isMe ? "Me" : msg.SenderDisplayName,
-                SenderImageUrl = isMe ? _myImageUrl : _recipientImageUrl
+                SenderImageUrl = isMe ? _myImageUrl : _recipientImageUrl,
+
+                // Initial state based on tracked presence
+                IsOnline = !isMe && _isRecipientOnline
             });
         }
 
@@ -142,7 +176,7 @@ namespace ClassifiedAds.Mobile.ViewModels
         }
     }
 
-    public class MessageUiModel
+    public partial class MessageUiModel : ObservableObject
     {
         public string Content { get; set; }
         public DateTime MessageSent { get; set; }
@@ -151,20 +185,12 @@ namespace ClassifiedAds.Mobile.ViewModels
         public string SenderDisplayName { get; set; }
         public string SenderImageUrl { get; set; }
 
-        public LayoutOptions Alignment => IsMine ? LayoutOptions.End : LayoutOptions.Start;
-        public Color BubbleColor => IsMine ? Color.FromArgb("#5243E4") : Color.FromArgb("#F2F2F2");
-        public Color TextColor => IsMine ? Colors.White : Colors.Black;
+        [ObservableProperty]
+        private bool isOnline;
 
-        public string StatusText
-        {
-            get
-            {
-                if (IsMine)
-                {
-                    return DateRead.HasValue ? "Seen" : "Delivered";
-                }
-                return "";
-            }
-        }
+        public LayoutOptions Alignment => IsMine ? LayoutOptions.End : LayoutOptions.Start;
+        public Color BubbleColor => IsMine ? Color.FromArgb("#5243E4") : Colors.White;
+        public Color TextColor => IsMine ? Colors.White : Colors.Black;
+        public string StatusText => IsMine ? (DateRead.HasValue ? "Seen" : "Delivered") : "";
     }
 }
