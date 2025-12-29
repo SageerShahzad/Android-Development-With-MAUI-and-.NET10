@@ -35,6 +35,11 @@
     </Shell.TitleView>
 
     <TabBar>
+        <ShellContent Title="" 
+              Icon="home_icon.png" 
+              Route="Home"
+              ContentTemplate="{DataTemplate views:AdsPage}" />
+        
         <ShellContent Title="Home" 
                       Icon="home_icon.png" 
                       Route="Home"

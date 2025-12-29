@@ -17,6 +17,8 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute(nameof(MessageThreadPage), typeof(MessageThreadPage));
 
+
+
     }
 
     private async void OnSearchClicked(object sender, EventArgs e)

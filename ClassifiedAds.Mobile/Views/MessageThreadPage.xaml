@@ -7,9 +7,7 @@
              Shell.TabBarIsVisible="False"
              BackgroundColor="#F5F5F5">
 
-    <Grid RowDefinitions="*, Auto" 
-          Padding="{OnPlatform Android='0,0,0,40', Default='0'}">
-        <!-- Bottom padding for Android nav bar; adjust if needed -->
+    <Grid RowDefinitions="*, Auto" Padding="0">
 
         <CollectionView x:Name="MessagesList"
                         Grid.Row="0"
@@ -103,8 +101,7 @@
 
         <Border Grid.Row="1" StrokeThickness="0" BackgroundColor="White" Padding="10" Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=5, Offset='0,-5'}">
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                <Border Grid.Column="0" Stroke="#E0E0E0" StrokeShape="RoundRectangle 25" HeightRequest="55" Padding="15,0" BackgroundColor="#F9F9F9">
-                    <!-- Slight height increase for visibility -->
+                <Border Grid.Column="0" Stroke="#E0E0E0" StrokeShape="RoundRectangle 25" HeightRequest="50" Padding="15,0" BackgroundColor="#F9F9F9">
                     <Entry Text="{Binding NewMessageContent}" 
                            Placeholder="Type a message..." 
                            TextColor="Black" 
@@ -113,6 +110,7 @@
                            ReturnType="Send"
                            ReturnCommand="{Binding SendMessageCommand}"/>
                 </Border>
+
                 <Button Grid.Column="1" 
                         Text="Send" 
                         Command="{Binding SendMessageCommand}" 
